@@ -111,7 +111,7 @@ async def client():
 @pytest.fixture(autouse=True)
 def mock_publish_click_event():
     # 模擬 main.py 中使用的 publish_click_event 函式
-    with patch("messaging.publish_click_event") as mock_func:
+    with patch("main.publish_click_event") as mock_func:
         yield mock_func
 
 
@@ -182,7 +182,7 @@ async def test_redirect_link_success_db_hit(
     cached_data = redis_test_client.hgetall("link_data:active")
     assert cached_data.get("original_url") == "http://active.com"  # 修正為使用 .get()
     assert cached_data.get("is_active") == "True"
-    # mock_publish_click_event.assert_called_once_with("active")
+    mock_publish_click_event.assert_called_once_with("active")
 
 
 @pytest.mark.asyncio
@@ -201,7 +201,7 @@ async def test_redirect_link_success_cache_hit(
     response = await client.get("/r/cached", follow_redirects=False)
     assert response.status_code == 302
     assert response.headers["location"] == "http://cached.com"
-    # mock_publish_click_event.assert_called_once_with("cached")
+    mock_publish_click_event.assert_called_once_with("cached")
 
 
 @pytest.mark.asyncio
@@ -264,7 +264,7 @@ async def test_redirect_password_protected_link_with_correct_password_db_hit(
     )
     assert response.status_code == 302
     assert response.headers["location"] == "http://protected-correct.com"
-    # mock_publish_click_event.assert_called_once_with("protected-correct")
+    mock_publish_click_event.assert_called_once_with("protected-correct")
 
 
 @pytest.mark.asyncio
@@ -293,4 +293,4 @@ async def test_redirect_password_protected_link_with_correct_password_cache_hit(
     )
     assert response.status_code == 302
     assert response.headers["location"] == "http://cached-protected-correct.com"
-    # mock_publish_click_event.assert_called_once_with("cached_protected_correct")
+    mock_publish_click_event.assert_called_once_with("cached_protected_correct")
