@@ -6,6 +6,7 @@ import pika
 
 
 def publish_click_event(slug: str):
+    print(f"Attempting to publish click event for slug: {slug}")
     RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "localhost")
     try:
         # 建立與 RabbitMQ 伺服器的連線
@@ -35,10 +36,10 @@ def publish_click_event(slug: str):
                 delivery_mode=pika.DeliveryMode.Persistent  # 即使 RabbitMQ 伺服器在訊息被消費者處理前重啟，這條訊息也不會丟失，它會被寫入磁碟
             ),
         )
-        print(f"Published click event for slug: {slug}")
+        print(f"Successfully published click event for slug: {slug}")
         connection.close()
     except Exception as e:
-        print(f"Failed to publish click event for slug {slug}: {e}")
+        print(f"Failed to publish click event for slug {slug}: {e}. Error: {e}")
         # 在實際生產環境中，這裡應該有更健壯的錯誤處理機制，例如重試、記錄到日誌系統、或發送到死信佇列 (Dead-Letter Queue)。
 
     finally:
